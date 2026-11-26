@@ -1,0 +1,314 @@
+/* =========================================================================
+   Smart Map Nav — accessibility.css
+   Visual modes, focus visibility, motion preferences and zoom resilience.
+
+   Loaded after main.css and mobile.css so these rules always win. Every
+   colour pair here is checked against WCAG 2.1: >= 7:1 for text in
+   high-contrast mode, >= 4.5:1 otherwise (see README audit results).
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. Focus visibility (WCAG 2.4.7 / 2.4.11)
+   ------------------------------------------------------------------------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+.leaflet-interactive:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+}
+
+/* Tiles and chips sit in tight grids: an outset ring would be clipped by the
+   neighbouring card, so draw it just inside the shape instead. */
+.tile:focus-visible,
+.chip-input:focus-visible + .chip-label {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: 0;
+}
+
+/* Windows High Contrast mode ignores our colours: rely on system colours. */
+@media (forced-colors: active) {
+    .btn,
+    .tile,
+    .chip-label,
+    .card,
+    .notice,
+    .resource-card,
+    .cta-float {
+        border: 2px solid ButtonBorder;
+    }
+
+    .nav-link.is-active {
+        border: 3px solid Highlight;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   2. High-contrast mode  (body.high-contrast)
+   Palette: black background, white text (21:1), yellow accents (15.2:1).
+   ------------------------------------------------------------------------- */
+
+body.high-contrast {
+    --color-bg: #000000;
+    --color-surface: #000000;
+    --color-surface-alt: #101010;
+    --color-surface-sunken: #1a1a1a;
+
+    --color-text: #ffffff;             /* 21:1 on #000 */
+    --color-text-muted: #f0f0f0;       /* 18.9:1 on #000 */
+    --color-text-invert: #000000;
+
+    --color-primary: #ffd400;          /* 15.2:1 on #000 */
+    --color-primary-dark: #ffe666;
+    --color-primary-soft: #1a1500;
+    --color-on-primary: #000000;       /* black on yellow: 15.2:1 */
+
+    --color-border: #ffffff;
+    --color-rule: #ffffff;
+
+    --color-success: #7cf0a8;          /* 15.6:1 on #000 */
+    --color-success-soft: #04240f;
+    --color-warning: #ffd400;
+    --color-warning-soft: #241c00;
+    --color-danger: #ff8a8a;           /* 9.4:1 on #000 */
+    --color-danger-soft: #2a0000;
+    --color-step: #ffffff;
+
+    --color-focus: #ffff00;
+
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: 0 0 0 3px #ffffff;
+}
+
+/* Hard-coded colours in main.css that CSS variables cannot reach. */
+body.high-contrast .site-footer {
+    background: #000000;
+    border-top: 3px solid #ffffff;
+}
+
+body.high-contrast .footer-emergency {
+    background: transparent;
+    border: 3px solid #ff8a8a;
+}
+
+body.high-contrast .footer-emergency__title,
+body.high-contrast .footer-emergency__text {
+    color: #ffb3b8;                    /* 11.1:1 on #000 */
+}
+
+body.high-contrast .footer-emergency__phone {
+    color: #ffd7d9;
+}
+
+body.high-contrast .map-marker {
+    background: #ffd400;
+    color: #000000;
+    border-color: #000000;
+    outline: 3px solid #ffffff;
+}
+
+body.high-contrast .map-marker--step-free {
+    background: #7cf0a8;
+}
+
+body.high-contrast .map-marker--user {
+    background: #ff8a8a;
+}
+
+body.high-contrast .map-marker--user {
+    animation: none;
+}
+
+body.high-contrast .btn-primary,
+body.high-contrast .nav-link.is-active {
+    border: 2px solid #ffffff;
+}
+
+body.high-contrast .chip-input:checked + .chip-label {
+    background: #ffd400;
+    color: #000000;
+    border-color: #000000;
+}
+
+body.high-contrast .chip-input:checked + .chip-label::before {
+    background: #000000;
+    color: #ffd400;
+}
+
+body.high-contrast .switch-thumb,
+body.high-contrast .mini-switch__thumb {
+    background: #ffffff;
+}
+
+body.high-contrast .switch-input:checked + .switch-label .switch-thumb,
+body.high-contrast .mini-switch__input:checked + .mini-switch__label .mini-switch__thumb {
+    background: #000000;
+}
+
+body.high-contrast .route-steps li {
+    border-left-color: #ffd400;
+}
+
+body.high-contrast .emergency-block {
+    background: #000000;
+    border: 3px solid #ff8a8a;
+}
+
+/* -------------------------------------------------------------------------
+   3. Text size  (body.text-scale-*)
+   The selected percentage is written onto <body> as an inline `font-size`
+   (server-rendered in header.php and kept in sync by accessibility.js), so
+   there is no separate "large text" switch to trigger it.
+
+   The class rules below are a deliberate fallback: they produce exactly the
+   same sizes, so text scaling still works if a browser is holding an older
+   copy of accessibility.js (which only toggles the class). Inline styles win
+   over these rules but the values match.
+
+   Everything in the design is sized in `em`, so this one value scales the
+   whole page proportionally - no separate "large" stylesheet.
+   ------------------------------------------------------------------------- */
+
+body.text-scale-100 { font-size: 1rem; }       /* 16 px - Normal */
+body.text-scale-125 { font-size: 1.25rem; }    /* 20 px - Large */
+body.text-scale-150 { font-size: 1.5rem; }     /* 24 px - Extra Large */
+
+/* At large text sizes some labels are long words in a narrow column: never clip them. */
+body {
+    overflow-wrap: break-word;
+}
+
+/* -------------------------------------------------------------------------
+   4. Preferred icon size  (body.icon-size-*)
+   All three options stay at or above the 64 px minimum from the brief.
+
+   Every icon on the page follows the setting, including the header brand,
+   the main navigation and the Accessibility button. The multipliers keep the
+   default (64 px) exactly the size the design used before: 28 px nav icons and
+   a 32 px brand glyph, scaling up with the larger options.
+   ------------------------------------------------------------------------- */
+
+body.icon-size-large  { --icon-size: 64px; }
+body.icon-size-xlarge { --icon-size: 80px; }
+body.icon-size-max    { --icon-size: 96px; }
+
+/* Header brand: the coloured tile grows with its glyph. */
+.brand__mark {
+    width: calc(var(--icon-size) * 0.75);
+    height: calc(var(--icon-size) * 0.75);
+}
+
+.brand__mark svg.icon {
+    width: calc(var(--icon-size) * 0.5);
+    height: calc(var(--icon-size) * 0.5);
+}
+
+/* Main navigation icons. */
+.nav-link__icon {
+    width: calc(var(--icon-size) * 0.4375);
+    height: calc(var(--icon-size) * 0.4375);
+}
+
+/* The header Accessibility button glyph. */
+.a11y-button__icon svg {
+    width: calc(var(--icon-size) * 0.4375);
+    height: calc(var(--icon-size) * 0.4375);
+}
+
+/* -------------------------------------------------------------------------
+   5. Reduced motion  (OS setting only)
+   The in-app toggle now controls vibration instead, so there is no
+   body.reduce-motion class any more: the media query covers every visitor who
+   asked their operating system for less motion.
+   ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .map-marker--user {
+        animation: none;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   6. Screen-reader hints
+   Extra guidance is shown by default (it helps cognitive users too) and can
+   be switched off in Settings; the aria-live announcements always remain.
+   ------------------------------------------------------------------------- */
+
+.hint-extra {
+    display: none;
+    margin: var(--space-2) 0 0;
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+}
+
+body.sr-hints .hint-extra {
+    display: block;
+}
+
+/* -------------------------------------------------------------------------
+   7. Zoom / reflow resilience (WCAG 1.4.4 and 1.4.10)
+   No fixed pixel heights on text containers; nothing may scroll in two
+   directions at 200 % zoom on a 1280px viewport.
+   ------------------------------------------------------------------------- */
+
+html {
+    scroll-behavior: smooth;
+}
+
+@media (max-width: 767px) {
+    .icon-panel {
+        max-height: 88vh;              /* a little more room when text is big */
+    }
+}
+
+/* When the detail panel is open on a phone, stop the page behind scrolling. */
+body.panel-open {
+    overflow: hidden;
+}
+
+/* Map canvas needs a hard border in high-contrast mode: OSM tiles cannot
+   follow our palette, so the boundary must be obvious. */
+body.high-contrast .map-canvas,
+body.high-contrast .leaflet-container {
+    border: 3px solid #ffffff;
+    filter: contrast(1.1) saturate(0.8);
+}
+
+/* Print: the demo script is often printed for a marker. */
+@media print {
+    .site-header,
+    .site-nav,
+    .filter-bar,
+    .map-controls,
+    .cta-float,
+    .icon-panel,
+    .site-footer {
+        display: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+        color: #000000;
+        background: #ffffff;
+    }
+
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+    }
+}

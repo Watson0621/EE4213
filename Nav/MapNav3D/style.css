@@ -1,0 +1,1503 @@
+:root {
+    --bg: #0f172a;
+    --panel-bg: rgba(30, 41, 59, 0.95);
+    --primary: #3b82f6;
+    --text: #f8fafc;
+    --border: rgba(255,255,255,0.1);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    touch-action: none;
+}
+
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+.ui-toggle-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 10000;
+    background: rgba(30, 41, 59, 0.9);
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+    .ui-toggle-btn:hover {
+        background: rgba(59, 130, 246, 0.8);
+    }
+
+/* -------------------------------------------------------------------------
+   Exit back to CityU Map Nav (fixed bottom-left: free in every breakpoint,
+   and visible even when the top bar is collapsed).
+   ------------------------------------------------------------------------- */
+.exit-btn {
+    position: fixed;
+    left: 15px;
+    bottom: 15px;
+    z-index: 10000;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(239, 68, 68, 0.9);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    transition: background 0.2s ease;
+}
+
+.exit-btn:hover,
+.exit-btn:focus-visible {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.exit-btn .material-symbols-rounded {
+    font-size: 1.25rem;
+}
+
+/* 無障礙開關 */
+.step-free-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    user-select: none;
+}
+
+    .step-free-label input {
+        display: none;
+    }
+
+    .step-free-label:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .step-free-label:has(input:checked) {
+        background: rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
+        color: #10b981;
+    }
+
+/* 資源面板 */
+.resource-panel {
+    position: fixed;
+    left: 20px;
+    top: 80px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.res-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    color: #cbd5e1;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+    .res-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .res-btn.active {
+        background: rgba(59, 130, 246, 0.4);
+        color: #fff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 10px rgba(59,130,246,0.5);
+    }
+
+.find-nearest-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    animation: nearest-pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes nearest-pop {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.resource-panel-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #bbf7d0;
+    text-align: center;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.resource-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.find-nearest-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(34, 197, 94, 0.25);
+    border: 1px solid #22c55e;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .find-nearest-btn:hover {
+        background: rgba(34, 197, 94, 0.45);
+    }
+
+    .find-nearest-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+.nearest-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2500;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: calc(100% - 32px);
+    max-width: 420px;
+    box-sizing: border-box;
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #22c55e;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+}
+
+.nearest-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #bbf7d0;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.nearest-close {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px;
+}
+
+.nearest-info {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+}
+
+.nearest-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.nearest-route {
+    flex: 1;
+    justify-content: center;
+}
+
+.nearest-next {
+    background: rgba(255,255,255,0.08);
+}
+
+@keyframes pulse-cyan {
+    0% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(34, 211, 238, 0.4);
+    }
+
+    50% {
+        transform: scale(1.4);
+        box-shadow: 0 0 15px 5px rgba(34, 211, 238, 0.7);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(34, 211, 238, 0.4);
+    }
+}
+
+@keyframes pulse-yellow {
+    0% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(250, 204, 21, 0.4);
+    }
+
+    50% {
+        transform: scale(1.4);
+        box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(250, 204, 21, 0.4);
+    }
+}
+
+@keyframes pulse-green {
+    0% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(34, 197, 94, 0.4);
+    }
+
+    50% {
+        transform: scale(1.4);
+        box-shadow: 0 0 15px 5px rgba(34, 197, 94, 0.7);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(34, 197, 94, 0.4);
+    }
+}
+
+@keyframes pulse-blue {
+    0% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(59, 130, 246, 0.4);
+    }
+
+    50% {
+        transform: scale(1.4);
+        box-shadow: 0 0 15px 5px rgba(59, 130, 246, 0.7);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(59, 130, 246, 0.4);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(239, 68, 68, 0.4);
+    }
+
+    50% {
+        transform: scale(1.4);
+        box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.7);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px 2px rgba(239, 68, 68, 0.4);
+    }
+}
+
+.map-icon.highlight-resource {
+    animation: pulse-cyan 1.5s infinite !important;
+    border-color: #22d3ee !important;
+    color: #22d3ee !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.map-icon.highlight-search {
+    animation: pulse-cyan 1.5s infinite !important;
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.map-icon.highlight-clicked {
+    animation: pulse-yellow 1.5s infinite !important;
+    border-color: #facc15 !important;
+    color: #facc15 !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.map-icon.highlight-nearest {
+    animation: pulse-green 1.5s infinite !important;
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.map-icon.highlight-start {
+    animation: pulse-blue 1.5s infinite !important;
+    border-color: #3b82f6 !important;
+    color: #3b82f6 !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.map-icon.highlight-dest {
+    animation: pulse-red 1.5s infinite !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.map-label {
+    position: relative;
+    padding: 6px;
+    pointer-events: none;
+}
+
+.map-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    border: 3px solid #e2e8f0;
+    font-size: 1.375rem;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease, box-shadow 0.25s ease;
+    z-index: 1;
+    opacity: 0.85;
+}
+
+    .map-icon.icon-toilet {
+        color: #10b981;
+        border-color: #10b981;
+    }
+
+    .map-icon.icon-toilet-male {
+        color: #60a5fa;
+        border-color: #60a5fa;
+    }
+
+    .map-icon.icon-toilet-female {
+        color: #f472b6;
+        border-color: #f472b6;
+    }
+
+    .map-icon.icon-toilet-accessible {
+        color: #10b981;
+        border-color: #10b981;
+    }
+
+    .map-icon.icon-elevator {
+        color: #8b5cf6;
+        border-color: #8b5cf6;
+    }
+
+    .map-icon.icon-escalator {
+        color: #06b6d4;
+        border-color: #06b6d4;
+    }
+
+    .map-icon.icon-stair {
+        color: #f59e0b;
+        border-color: #f59e0b;
+    }
+
+    .map-icon.icon-room {
+        color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .map-icon.icon-vending {
+        color: #ec4899;
+        border-color: #ec4899;
+    }
+
+    .map-icon.icon-water {
+        color: #38bdf8;
+        border-color: #38bdf8;
+    }
+
+    .map-icon.icon-printers {
+        color: #94a3b8;
+        border-color: #94a3b8;
+    }
+
+    .map-icon.icon-computers {
+        color: #6366f1;
+        border-color: #6366f1;
+    }
+
+    .map-icon.icon-microwaves {
+        color: #f97316;
+        border-color: #f97316;
+    }
+
+    .map-icon.icon-shops {
+        color: #ec4899;
+        border-color: #ec4899;
+    }
+
+    .map-icon.icon-banking {
+        color: #10b981;
+        border-color: #10b981;
+    }
+
+    .map-icon.icon-charging {
+        color: #eab308;
+        border-color: #eab308;
+    }
+
+    .map-icon.icon-default {
+        color: #64748b;
+        border-color: #cbd5e1;
+    }
+
+.map-label .map-tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 2px);
+    transform: translate(-50%, 8px);
+    padding: 5px 10px;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 8px;
+    color: #f8fafc;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 3;
+}
+
+    .map-label .map-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(15, 23, 42, 0.96);
+    }
+
+@media (hover: hover) and (pointer: fine) {
+    .map-label {
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+        .map-label:hover {
+            z-index: 9999;
+        }
+
+            .map-label:hover .map-icon {
+                transform: scale(1.45);
+                opacity: 1;
+                box-shadow: 0 10px 26px rgba(0,0,0,0.65);
+            }
+
+            .map-label:hover .map-tooltip {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+}
+
+.material-symbols-rounded {
+    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+.top-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 65px;
+    z-index: 1000;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+    .top-bar.collapsed {
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Fixed on purpose: the brand should not grow with the text-size setting. */
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.brand-icon {
+    color: var(--primary);
+    /* Fixed on purpose (see .brand). */
+    font-size: 28px;
+}
+
+/* 去除按鈕默認焦點框 */
+.floor-filters {
+    display: flex;
+    gap: 5px;
+    background: rgba(0,0,0,0.3);
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.filter-btn {
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none !important;
+}
+
+    .filter-btn:hover {
+        color: white;
+    }
+
+    .filter-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+
+select, .search-box input, .btn-main {
+    background: rgba(0,0,0,0.3);
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.route-type-select {
+    /* Scales with the text size, so "Step-free" stays readable at the largest size. */
+    max-width: 14rem;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 10px;
+}
+
+    .search-box input {
+        border: none;
+        background: transparent;
+        padding: 8px 5px;
+        color: white;
+        outline: none;
+        min-width: 160px;
+    }
+
+.clear-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+    .clear-btn:hover {
+        color: white;
+        background: rgba(255,255,255,0.12);
+    }
+
+    .clear-btn .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+.search-icon {
+    color: var(--primary);
+    font-size: 1.125rem;
+}
+
+.start-icon {
+    color: #22d3ee;
+}
+
+.end-icon {
+    color: #ef4444;
+}
+
+.suggest-list {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    min-width: 220px;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    max-height: min(50vh, 360px);
+    overflow-y: auto;
+    z-index: 3000;
+    display: none;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    padding: 4px;
+}
+
+    .suggest-list.show {
+        display: block;
+    }
+
+.suggest-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+    .suggest-item:hover, .suggest-item:active {
+        background: rgba(59, 130, 246, 0.28);
+        color: white;
+    }
+
+    .suggest-item .material-symbols-rounded {
+        font-size: 1.125rem;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+.suggest-building {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px 2px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.suggest-floor {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 2px 22px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #60a5fa;
+}
+
+    .suggest-building .material-symbols-rounded,
+    .suggest-floor .material-symbols-rounded {
+        font-size: 0.875rem;
+    }
+
+.suggest-item.suggest-node {
+    padding-left: 38px;
+}
+
+.btn-main {
+    background: var(--primary);
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+    .btn-main:hover {
+        background: #2563eb;
+    }
+
+/* Pulsing "ready" ring on the Find Route button: shows when a start and a
+   destination are both set but the route on the map is stale. The ring grows
+   outward and fades to fully transparent each cycle. */
+@keyframes find-route-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.65); }
+    70%  { box-shadow: 0 0 0 18px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+#find-route-btn.pulse-ready {
+    animation: find-route-pulse 1.5s ease-out infinite;
+}
+
+.side-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    top: auto;
+    z-index: 10;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+.side-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.side-panel-toggle {
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .side-panel-toggle:hover {
+        background: rgba(59, 130, 246, 0.4);
+    }
+
+    .side-panel-toggle .material-symbols-rounded {
+        font-size: 1.25rem;
+        transition: transform 0.2s;
+    }
+
+.side-panel-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.side-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+
+.route-summary {
+    display: none;
+    font-size: 0.8rem;
+    color: #60a5fa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.side-panel.collapsed .route-summary {
+    display: block;
+}
+
+.side-panel-toggle.danger {
+    color: #ef4444;
+}
+
+    .side-panel-toggle.danger:hover {
+        background: rgba(239, 68, 68, 0.4);
+    }
+
+.side-panel.collapsed .side-panel-body {
+    display: none;
+}
+
+.side-panel.collapsed .side-panel-toggle .material-symbols-rounded {
+    transform: rotate(180deg);
+}
+
+    .side-panel h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: white;
+    }
+
+#route-steps {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    overflow-y: auto;
+    max-height: 55vh;
+    overflow-x: hidden;
+    margin-top: 10px;
+}
+
+.nav-step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+    .nav-step:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .nav-step .step-num {
+        color: #94a3b8;
+        margin-right: 10px;
+        font-weight: normal;
+        min-width: 20px;
+        text-align: right;
+    }
+
+    .nav-step .step-name {
+        flex: 1;
+    }
+
+    .nav-step.active-step {
+        color: #fff;
+        background: rgba(59, 130, 246, 0.4);
+        font-weight: bold;
+        transform: translateX(5px);
+    }
+
+        .nav-step.active-step .step-num {
+            color: #fff;
+        }
+
+    .nav-step.passed-step {
+        color: #64748b;
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+
+        .nav-step.passed-step .step-num {
+            color: #64748b;
+        }
+
+.node-popup {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 100%);
+    width: 100%;
+    max-width: 400px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    border-radius: 20px 20px 0 0;
+    border: 1px solid var(--border);
+    padding: 20px;
+    z-index: 2000;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+}
+
+    .node-popup.active {
+        transform: translate(-50%, 0);
+    }
+
+.popup-content {
+    text-align: center;
+}
+
+#popup-title {
+    margin: 0 0 10px 0;
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+#popup-desc {
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+
+.btn-close {
+    background: transparent;
+    color: #ef4444;
+    border: none;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px;
+        gap: 6px;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+        border-radius: 12px;
+    }
+
+    .brand {
+        justify-content: center;
+        /* Fixed: the brand does not follow the text-size setting. */
+        font-size: 16px;
+    }
+
+    .brand-icon {
+        font-size: 22px;
+    }
+
+    /* Exit moves to the top-left on phones: the bottom edge belongs to the
+       resource bar and the directions sheet. 40px square mirrors the menu
+       button in the top-right corner. */
+    .exit-btn {
+        top: 15px;
+        left: 15px;
+        bottom: auto;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 10px;
+    }
+
+    .exit-btn .exit-text {           /* icon only: keeps the centred brand clear */
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .exit-btn .material-symbols-rounded {
+        font-size: 24px;
+    }
+
+    .floor-filters {
+        justify-content: center;
+        padding: 2px;
+    }
+
+    .filter-btn {
+        padding: 3px 8px;
+        font-size: 0.8rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .search-box {
+        width: 100%;
+        padding: 0 6px;
+    }
+
+        .search-box input {
+            flex: 1;
+            min-width: 0;
+            padding: 4px 0;
+            font-size: 0.85rem;
+        }
+
+    .btn-main {
+        width: 100%;
+        justify-content: center;
+        padding: 6px;
+        font-size: 0.9rem;
+    }
+
+    .step-free-label {
+        justify-content: center;
+        padding: 6px;
+        font-size: 0.85rem;
+    }
+
+    .side-panel {
+        position: fixed;
+        left: 5px;
+        right: 5px;
+        width: auto;
+        max-height: 40vh;
+        padding: 10px;
+        border-radius: 12px 12px 0 0;
+        bottom: 0;
+        top: auto;
+        z-index: 900;
+        background: rgba(30, 41, 59, 0.92);
+    }
+
+        .side-panel h2 {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+    #route-steps {
+        font-size: 0.8rem;
+        max-height: 20vh;
+    }
+
+    .nav-step {
+        padding: 4px 6px;
+    }
+
+    /* 手機端資源面板移到底部 */
+    .resource-panel {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto !important;
+        flex-direction: column;
+        overflow: visible;
+        padding: 8px;
+        border-radius: 12px 12px 0 0;
+        z-index: 1000;
+    }
+
+    .resource-filters {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 6px;
+    }
+
+    /* Phones: show the Directions panel only when a route is active, and hide
+       the "Find the nearest" panel while a route is on screen. */
+    body:not(.route-active) .side-panel {
+        display: none;
+    }
+
+    body.route-active .resource-panel {
+        display: none;
+    }
+
+    .res-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .node-popup {
+        width: 100%;
+        left: 0;
+        transform: translate(0, 100%);
+        border-radius: 20px 20px 0 0;
+    }
+
+        .node-popup.active {
+            transform: translate(0, 0);
+        }
+
+    .map-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 1rem;
+        border-width: 2px;
+    }
+
+    .map-label {
+        padding: 2px;
+        pointer-events: none !important;
+    }
+
+        .map-label .map-tooltip {
+            display: none;
+        }
+
+    .suggest-list {
+        min-width: 0;
+        max-height: 40vh;
+    }
+}
+
+/* ===== 定位 / 感應器 / QR 面板 ===== */
+.location-panel {
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    z-index: 9999;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    max-width: 230px;
+    user-select: none;
+}
+
+.loc-handle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    padding: 2px 2px 2px 8px;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    user-select: none;
+    touch-action: none;
+}
+
+.loc-hide-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+    .loc-hide-btn:hover {
+        color: white;
+        background: rgba(255,255,255,0.12);
+    }
+
+    .loc-hide-btn .material-symbols-rounded {
+        font-size: 1.125rem;
+        transition: transform 0.2s;
+    }
+
+.location-panel.collapsed .loc-body {
+    display: none;
+}
+
+.location-panel.collapsed .loc-hide-btn .material-symbols-rounded {
+    transform: rotate(180deg);
+}
+
+    .loc-handle .material-symbols-rounded {
+        font-size: 1.125rem;
+    }
+
+.loc-status {
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.loc-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0,0,0,0.4);
+    color: #e2e8f0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .btn-mini:hover {
+        background: rgba(59, 130, 246, 0.4);
+        color: white;
+    }
+
+    .btn-mini .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+.loc-readout {
+    margin-top: 6px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* "Scan QR" button shown beside the Start box in the top bar. */
+.scan-qr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #cbd5e1;
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .scan-qr-btn:hover {
+        background: rgba(59, 130, 246, 0.4);
+        color: white;
+    }
+
+    .scan-qr-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+/* Red prompt on the Start box / Scan QR button when a filter is active but no
+   start point has been set yet. */
+.highlight-required {
+    border-color: #ef4444 !important;
+    animation: required-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes required-pulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.55); }
+    50%      { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.2); }
+}
+
+/* Confirm dialog slides up from the bottom of the screen. */
+.qr-modal.bottom-sheet {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.qr-modal.bottom-sheet .qr-modal-content {
+    max-width: 420px;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    animation: sheet-up 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes sheet-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+.qr-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 30000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+}
+
+    .qr-modal.active {
+        display: flex;
+    }
+
+.qr-modal-content {
+    width: 100%;
+    max-width: 420px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    text-align: center;
+}
+
+    .qr-modal-content h3 {
+        margin: 0 0 10px;
+        color: white;
+        font-size: 1rem;
+    }
+
+#qr-reader {
+    width: 100%;
+    min-height: 240px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+}
+
+.qr-hint {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin: 10px 0;
+}
+
+.qr-modal-content .btn-main {
+    width: 100%;
+    justify-content: center;
+}
+
+.confirm-content {
+    max-width: 320px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.confirm-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+    .confirm-btn .material-symbols-rounded {
+        font-size: 1.25rem;
+    }
+
+.confirm-yes {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #10b981;
+}
+
+    .confirm-yes:hover {
+        background: rgba(16, 185, 129, 0.35);
+    }
+
+.confirm-no {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+    .confirm-no:hover {
+        background: rgba(239, 68, 68, 0.35);
+    }

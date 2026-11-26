@@ -1,0 +1,6 @@
+<!-- Modifier: David (with Grok Premium). New stroke icon for live nodetype mapping. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="icon" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="32" cy="28" r="10"/>
+  <path d="M32 38 V54"/>
+  <path d="M20 54 H44"/>
+</svg>

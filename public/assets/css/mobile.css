@@ -1,0 +1,614 @@
+/* =========================================================================
+   Smart Map Nav — mobile.css
+   Mobile-first breakpoints. Verified at 375px (iPhone SE), 768px (tablet)
+   and 1280px+ (desktop). Only layout that genuinely changes lives here;
+   colour, type and component styling stays in main.css.
+
+   Breakpoints:
+     375px  -> default styles in this file (2-col grid, bottom sheet)
+     768px  -> tablet: 3-col grid, nav always open, 160px tiles
+     1024px -> desktop map split (70/30) and side panel
+     1280px -> wide desktop: 4-col grid, 3-col footer
+   ========================================================================= */
+
+/* Hidden elements must stay hidden even when a display value is set. */
+[hidden] {
+    display: none !important;
+}
+
+/* -------------------------------------------------------------------------
+   Base (375px and up)
+   ------------------------------------------------------------------------- */
+
+body {
+    font-size: var(--font-size-base);
+}
+
+/* The floating call to action sits a little closer to the edge on a phone. */
+.cta-float {
+    right: var(--space-3);
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    min-height: 60px;
+    padding: 12px var(--space-5);
+    font-size: 1.08em;
+}
+
+.welcome-panel {
+    padding: var(--space-4);
+}
+
+/* Room for the floating Start navigating button under the Save/Reset row. */
+.settings-form {
+    padding-bottom: var(--space-8);
+}
+
+.map-view-switch {
+    top: var(--space-2);
+    left: var(--space-2);
+}
+
+/* On phones the masthead is NOT sticky: the filter bar needs the top of the
+   viewport, and a 2-row header would eat ~20 % of a 667px screen. */
+.site-header {
+    position: static;
+}
+
+.site-header__inner {
+    flex-wrap: wrap;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+}
+
+.brand__tagline {
+    display: none;              /* kept in the DOM for screen readers */
+}
+
+.site-header__actions {
+    margin-left: auto;
+}
+
+.a11y-button__text,
+.nav-toggle__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.a11y-button,
+.nav-toggle {
+    padding: var(--space-2);
+}
+
+/* Collapsed nav is a JS enhancement; without JS the list stays visible. */
+.site-nav.is-collapsed {
+    display: none;
+}
+
+.site-main {
+    padding: var(--space-4) var(--space-3) var(--space-6);
+}
+
+.filter-bar {
+    margin: 0 calc(-1 * var(--space-3)) var(--space-4);
+    padding: var(--space-2) var(--space-3);
+}
+
+.filter-bar__row {
+    gap: var(--space-2);
+}
+
+/* Horizontal-scrolling chips, per the brief. The `overflow-x` is what keeps a
+   long row from forcing its grid/flex parent wider than the screen. */
+.chip-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 calc(-1 * var(--space-3));
+    padding: var(--space-1) var(--space-3) var(--space-2);
+}
+
+.icon-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.tile {
+    min-height: 120px;
+    padding: var(--space-2);
+}
+
+.tile__desc {
+    font-size: 0.82em;
+}
+
+/* Detail panel is a bottom sheet on phones. */
+.icon-panel {
+    position: fixed;
+    inset: auto 0 0 0;
+    max-height: 82vh;
+}
+
+/* --- settings ---------------------------------------------------------- */
+
+.settings-preview {
+    order: -1;                  /* preview sits above the controls on mobile */
+}
+
+/* Preference chips (text size, user type) must wrap, not scroll: every option
+   has to be visible without a sideways swipe. */
+.settings-group .chip-row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    margin: 0;
+    padding: 0;
+}
+
+.setting-row {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* In a column, flex-basis becomes a HEIGHT — reset it or each row grows a
+   220px void between its label and its switch. */
+.setting-row__text {
+    flex: 0 0 auto;
+}
+
+.setting-row .switch-label {
+    justify-content: space-between;
+}
+
+/* At the largest text size a two-column 375px grid leaves too little room for
+   an 18px-plus label. Dropping to one column keeps the layout readable
+   instead of clipping words (WCAG 1.4.4 / 1.4.10). */
+body.text-scale-150 .icon-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* --- map -------------------------------------------------------------- */
+
+.map-layout {
+    grid-template-columns: 1fr;
+}
+
+.map-stage,
+.map-canvas {
+    min-height: calc(100vh - 220px);
+}
+
+/* Route summary becomes a swipeable sheet. JS collapses it on load; if JS is
+   unavailable the full summary is simply visible. */
+.map-sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Leaflet's own panes sit at z-index 200-800 (tiles 200, markers 600,
+       controls 800). A sheet at 120 would render *behind* the map, so the
+       sheet has to clear the highest Leaflet control. */
+    z-index: 900;
+    max-height: 62vh;
+    overflow-y: auto;
+    border: 2px solid var(--color-rule);
+    border-bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: var(--shadow-lg);
+}
+
+.map-sidebar.is-collapsed {
+    max-height: 40vh;
+    overflow: hidden;
+}
+
+/* Collapsed: show the handle plus the live status line only, so the sheet
+   reads as a summary rather than a chopped-off heading. An error message stays
+   visible too — hiding a failure behind a collapsed sheet would be cruel. */
+.map-sidebar.is-collapsed .map-sidebar__body > *:not(#route-status):not(#route-error) {
+    display: none;
+}
+
+.map-sidebar.is-collapsed .map-sidebar__body {
+    padding-bottom: var(--space-3);
+}
+
+.map-sidebar__body {
+    padding-top: var(--space-3);
+}
+
+/* On phones the sheet owns the bottom of the screen, so the map controls move
+   to the top-right where they stay reachable at every sheet height. */
+@media (max-width: 1023px) {
+    .map-controls {
+        top: var(--space-3);
+        bottom: auto;
+    }
+}
+
+.sheet-handle {
+    position: sticky;
+    top: 0;
+    background: var(--color-surface);
+}
+
+/* --- footer ----------------------------------------------------------- */
+
+.site-footer__inner {
+    grid-template-columns: 1fr;
+    padding: var(--space-5) var(--space-3);
+}
+
+.hero__actions .btn {
+    width: 100%;
+}
+
+/* On phones the "what you can do" card follows the tip text, so it needs air. */
+.hero__aside {
+    margin-top: var(--space-4);
+}
+
+/* -------------------------------------------------------------------------
+   768px — tablet
+   ------------------------------------------------------------------------- */
+
+@media (min-width: 768px) {
+
+    .site-header {
+        position: sticky;
+        top: 0;
+    }
+
+    .site-header__inner {
+        flex-wrap: nowrap;
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .brand__tagline {
+        display: block;
+    }
+
+    .a11y-button__text,
+    .nav-toggle__text {
+        position: static;
+        width: auto;
+        height: auto;
+        clip-path: none;
+        white-space: normal;
+    }
+
+    .a11y-button,
+    .nav-toggle {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    /* Navigation is always visible from tablet up; the hamburger is redundant. */
+    .nav-toggle {
+        display: none;
+    }
+
+    .site-nav {
+        display: block;
+    }
+
+    .site-nav.is-collapsed {
+        display: block;
+    }
+
+    .nav-list {
+        flex-direction: row;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+    }
+
+    .site-main {
+        padding: var(--space-5) var(--space-5) var(--space-7);
+    }
+
+    /* Bigger, more prominent Start navigating pill from tablet up. */
+    .cta-float {
+        min-height: 64px;
+        padding: 14px 30px;
+        font-size: 1.2em;
+    }
+
+    /* 3-column icon grid: (768 - 2*24 padding - 2*16 gap) / 3 = ~229px tiles */
+    .icon-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-4);
+    }
+
+    .tile {
+        min-height: 160px;
+        padding: var(--space-3);
+    }
+
+    .tile__desc {
+        font-size: 0.9em;
+    }
+
+    /* Filter bar stops being sticky so the sticky masthead can do its job. */
+    .filter-bar {
+        position: static;
+        margin: 0 0 var(--space-5);
+        padding: var(--space-4);
+        border: 2px solid var(--color-rule);
+        border-radius: var(--radius-lg);
+        box-shadow: none;
+    }
+
+    .chip-row {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* --- landing ------------------------------------------------------ */
+
+    .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: var(--space-6);
+        align-items: start;
+        padding: var(--space-7) 0 var(--space-5);
+    }
+
+    .hero__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+    }
+
+    .hero__actions .btn {
+        width: auto;
+    }
+
+    .hero__aside {
+        margin-top: 0;
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .guide-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* --- forms and settings ------------------------------------------- */
+
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .setting-row {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    /* In a row the text must be able to grow AND shrink. The base rule sets
+       `flex: 0 0 auto` for the stacked phone layout; without this reset a
+       long help line refuses to shrink and spills out of the block at
+       large text sizes. */
+    .setting-row__text {
+        flex: 1 1 240px;
+        min-width: 0;
+    }
+
+    .btn-large {
+        width: auto;
+        min-width: 260px;
+    }
+
+    /* --- footer -------------------------------------------------------- */
+
+    .site-footer__inner {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: var(--space-6);
+        padding: var(--space-6) var(--space-5);
+    }
+
+    .footer-emergency {
+        grid-column: 1 / -1;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   1024px — desktop layout: side panel instead of bottom sheet, map split
+   ------------------------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+
+    .site-main {
+        padding: var(--space-6) var(--space-6) var(--space-8);
+    }
+
+    .site-main--map {
+        max-width: 1600px;
+        padding: 0 var(--space-5) var(--space-5);
+    }
+
+    /* --- icon grid + detail panel ------------------------------------- */
+
+    .icons-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-5);
+        align-items: start;
+    }
+
+    /* JS adds .has-panel so the grid only gives up width when a panel is open. */
+    .icons-layout.has-panel {
+        grid-template-columns: minmax(0, 1fr) 400px;
+    }
+
+    .icon-panel {
+        position: sticky;
+        inset: auto;
+        top: calc(var(--header-height) + var(--space-4));
+        max-height: calc(100vh - var(--header-height) - var(--space-6));
+        overflow-y: auto;
+        padding: var(--space-5);
+        border: 4px solid var(--color-primary);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
+
+    .icon-panel__handle {
+        display: none;
+    }
+
+    .panel-actions {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* --- map ----------------------------------------------------------- */
+
+    .map-layout {
+        grid-template-columns: minmax(0, 7fr) minmax(320px, 3fr);
+        gap: var(--space-4);
+        align-items: start;
+        padding-top: var(--space-4);
+    }
+
+    .map-stage {
+        height: calc(100vh - 160px);
+        min-height: 520px;
+    }
+
+    .map-canvas {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .map-sidebar {
+        position: static;
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+        border: 2px solid var(--color-rule);
+        border-radius: var(--radius-md);
+        box-shadow: none;
+    }
+
+    .map-sidebar.is-collapsed {
+        max-height: none;
+        overflow-y: auto;
+    }
+
+    .sheet-handle {
+        display: none;
+    }
+
+    /* --- settings ------------------------------------------------------ */
+
+    /* Both blocks must always show in full. A sticky preview taller than the
+       viewport would hide its own bottom edge once the text is enlarged, so it
+       is static here and the page simply grows to fit. */
+    .settings-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+        gap: var(--space-5);
+        align-items: start;
+    }
+
+    .settings-layout > * {
+        min-width: 0;
+    }
+
+    .settings-preview {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .settings-form {
+        grid-column: 1;
+        grid-row: 1;
+        /* Keep Save/Reset clear of the floating Start navigating button. */
+        padding-bottom: var(--space-8);
+    }
+
+    /* At the largest text size neither column can fit, so stack them instead
+       of clipping the preview or the controls. */
+    body.text-scale-150 .settings-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.text-scale-150 .settings-preview,
+    body.text-scale-150 .settings-form {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    body.text-scale-150 .settings-preview {
+        order: -1;
+    }
+
+    /* Let a long help line wrap instead of pushing its switch outside the
+       block (the Vibration row names the cookie, which makes it longer). */
+    .setting-row {
+        flex-wrap: wrap;
+    }
+
+    .setting-row__text {
+        min-width: 0;
+    }
+
+    .switch-field {
+        flex: none;
+        margin-left: auto;
+    }
+
+    /* --- help ---------------------------------------------------------- */
+
+    .guide-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .faq {
+        max-width: 78ch;
+    }
+
+    /* --- landing ------------------------------------------------------- */
+
+    .card-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* -------------------------------------------------------------------------
+   1280px — wide desktop: 4-column icon grid, 3-column footer
+   ------------------------------------------------------------------------- */
+
+@media (min-width: 1280px) {
+
+    /* 4 columns, not 6: at 1280px six columns give ~180px tiles and the >=18px
+       labels wrap badly. Readability beats density (see README decisions). */
+    .icon-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--space-5);
+    }
+
+    .tile {
+        min-height: 176px;
+        padding: var(--space-4);
+    }
+
+    .site-main {
+        padding-left: var(--space-7);
+        padding-right: var(--space-7);
+    }
+
+    .site-footer__inner {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr);
+        padding: var(--space-7) var(--space-6);
+    }
+
+    .footer-emergency {
+        grid-column: auto;
+    }
+
+    .hero {
+        gap: var(--space-7);
+    }
+}

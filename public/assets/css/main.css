@@ -1,0 +1,2019 @@
+/* =========================================================================
+   Smart Map Nav — main.css
+   Mobile-first base: tokens, reset, typography, layout and components.
+   No framework, no build step. Every colour pair used for text is verified
+   against WCAG 2.1 contrast requirements (see the README audit table).
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. Design tokens
+   ------------------------------------------------------------------------- */
+
+:root {
+    /* Brand + surfaces */
+    --color-primary: #0b4f9e;          /* 7.8:1 on white */
+    --color-primary-dark: #08386f;
+    --color-primary-soft: #e7effa;
+    --color-on-primary: #ffffff;       /* 7.8:1 on --color-primary */
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-alt: #f2f5f8;
+    --color-surface-sunken: #e9eef3;
+
+    /* Text */
+    --color-text: #101820;             /* 17.1:1 on white */
+    --color-text-muted: #46535f;       /* 8.3:1 on white */
+    --color-text-invert: #ffffff;
+
+    /* Lines */
+    --color-border: #6f7c88;           /* 4.2:1 on white: >= 3:1 for UI parts */
+    --color-rule: #d3dae1;             /* decorative dividers only */
+
+    /* Status */
+    --color-success: #0b6b3a;          /* step-free / go */
+    --color-success-soft: #e4f4ea;
+    --color-warning: #8a4b00;
+    --color-warning-soft: #fdf0dd;
+    --color-danger: #a4161a;
+    --color-danger-soft: #fbe6e6;
+    --color-step: #58646f;             /* route that includes stairs */
+
+    /* Focus */
+    --color-focus: #0b4f9e;
+    --focus-width: 3px;
+    --focus-offset: 2px;
+
+    /* Typography */
+    --font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        "Noto Sans", "Noto Sans CJK TC", Arial, sans-serif;
+    --font-size-base: 1rem;            /* 16px minimum, never smaller */
+    --line-height-base: 1.6;
+    --line-height-tight: 1.25;
+    --font-weight-normal: 400;
+    --font-weight-bold: 700;
+
+    /* Spacing scale (4px rhythm) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+
+    /* Shape */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-pill: 999px;
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px rgba(16, 24, 32, 0.12);
+    --shadow-md: 0 4px 14px rgba(16, 24, 32, 0.16);
+    --shadow-lg: 0 12px 32px rgba(16, 24, 32, 0.22);
+
+    /* Sizing */
+    --touch-min: 48px;                 /* WCAG 2.5.5 / 2.5.8 target size */
+    --tile-min-height: 120px;          /* mobile floor from the brief */
+    --icon-size: 64px;                 /* large-icon default (Epic 2.1) */
+    --header-height: 88px;
+    --content-max: 1200px;
+
+    /* Motion */
+    --transition-fast: 120ms ease;
+    --transition-med: 220ms ease;
+}
+
+/* -------------------------------------------------------------------------
+   2. Reset
+   ------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video {
+    max-width: 100%;
+}
+
+svg.icon {
+    display: block;
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+/* Visible focus everywhere. We never use `outline: none` without a replacement. */
+:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+}
+
+/* The main landmark is focusable so the skip link works in every browser. */
+main:focus {
+    outline: none;
+}
+
+/* -------------------------------------------------------------------------
+   3. Typography
+   ------------------------------------------------------------------------- */
+
+h1, h2, h3, h4 {
+    margin: 0 0 var(--space-3);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    text-wrap: balance;
+}
+
+h1 { font-size: 2em; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.25em; }
+h4 { font-size: 1.1em; }
+
+p {
+    margin: 0 0 var(--space-4);
+    max-width: 68ch;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+    text-decoration-thickness: 3px;
+}
+
+ul, ol {
+    margin: 0 0 var(--space-4);
+    padding-left: 1.4em;
+}
+
+li {
+    margin-bottom: var(--space-2);
+}
+
+hr {
+    border: 0;
+    border-top: 2px solid var(--color-rule);
+    margin: var(--space-6) 0;
+}
+
+/* -------------------------------------------------------------------------
+   4. Utilities
+   ------------------------------------------------------------------------- */
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: -200px;
+    left: var(--space-3);
+    z-index: 200;
+    display: inline-block;
+    padding: var(--space-3) var(--space-5);
+    min-height: var(--touch-min);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+    top: 0;
+    color: var(--color-on-primary);
+}
+
+.cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    margin-bottom: var(--space-4);
+}
+
+.stack > * + * {
+    margin-top: var(--space-4);
+}
+
+.lede {
+    font-size: 1.15em;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+}
+
+.muted {
+    color: var(--color-text-muted);
+}
+
+.eyebrow {
+    margin: 0 0 var(--space-2);
+    font-size: 0.85em;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   5. Layout shell
+   ------------------------------------------------------------------------- */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--color-surface);
+    border-bottom: 2px solid var(--color-rule);
+    box-shadow: var(--shadow-sm);
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+}
+
+.site-main {
+    display: block;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4) var(--space-7);
+}
+
+.site-main--flush {
+    max-width: none;
+    padding: 0;
+}
+
+.page-head {
+    margin-bottom: var(--space-5);
+}
+
+.page-head h1 {
+    margin-bottom: var(--space-2);
+}
+
+/* -------------------------------------------------------------------------
+   6. Brand
+   ------------------------------------------------------------------------- */
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--touch-min);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.brand:hover .brand__name,
+.brand:focus-visible .brand__name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.brand__mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    flex: none;
+}
+
+.brand__mark svg.icon {
+    width: 32px;
+    height: 32px;
+}
+
+.brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.brand__name {
+    font-size: 1.15em;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.brand__tagline {
+    font-size: 0.8em;
+    color: var(--color-text-muted);
+}
+
+.site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* -------------------------------------------------------------------------
+   7. Buttons
+   ------------------------------------------------------------------------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-alt);
+    color: var(--color-text);
+    font-weight: var(--font-weight-bold);
+    font-size: 1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.btn:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+    color: var(--color-on-primary);
+}
+
+.btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-secondary:hover {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-dark);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: transparent;
+    text-decoration: underline;
+}
+
+.btn-ghost:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-primary-dark);
+}
+
+.btn-emergency {
+    background: var(--color-danger);
+    color: #ffffff;
+    border-color: var(--color-danger);
+}
+
+.btn-emergency:hover {
+    background: #7d1013;
+    border-color: #7d1013;
+    color: #ffffff;
+}
+
+.btn-small {
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.95em;
+}
+
+.btn-large {
+    min-height: 64px;
+    padding: var(--space-3) var(--space-5);
+    font-size: 1.15em;
+    width: 100%;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Header icon buttons: always visible, 48x48 minimum. */
+.a11y-button,
+.nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+}
+
+.a11y-button:hover,
+.nav-toggle:hover {
+    background: var(--color-primary-soft);
+}
+
+.a11y-button[aria-expanded="true"] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.a11y-button__icon {
+    display: grid;
+    place-items: center;
+}
+
+.nav-toggle__bars {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 22px;
+    height: 18px;
+}
+
+.nav-toggle__bars span {
+    display: block;
+    height: 3px;
+    background: currentColor;
+    border-radius: 2px;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* -------------------------------------------------------------------------
+   8. Quick accessibility menu (header)
+   ------------------------------------------------------------------------- */
+
+.a11y-menu {
+    border-top: 2px solid var(--color-rule);
+    background: var(--color-primary-soft);
+}
+
+.a11y-menu__inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--space-4);
+}
+
+.a11y-menu__title {
+    margin: 0 0 var(--space-3);
+    font-size: 1.05em;
+}
+
+.a11y-menu__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.a11y-menu__hint {
+    margin: var(--space-3) 0 0;
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   9. Navigation
+   ------------------------------------------------------------------------- */
+
+.site-nav {
+    border-top: 2px solid var(--color-rule);
+    background: var(--color-surface);
+}
+
+.nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    list-style: none;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background: var(--color-surface-alt);
+    text-decoration: underline;
+}
+
+.nav-link__icon {
+    flex: none;
+    color: var(--color-primary);
+}
+
+.nav-link.is-active {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.nav-link.is-active .nav-link__icon {
+    color: var(--color-on-primary);
+}
+
+.nav-link.is-active:hover {
+    background: var(--color-primary-dark);
+    color: var(--color-on-primary);
+}
+
+/* -------------------------------------------------------------------------
+   10. Notices
+   ------------------------------------------------------------------------- */
+
+.notice {
+    display: block;
+    margin: 0 0 var(--space-4);
+    padding: var(--space-4);
+    border: 2px solid var(--color-border);
+    border-left-width: 8px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-alt);
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice--info {
+    border-left-color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.notice--warn {
+    border-left-color: var(--color-warning);
+    background: var(--color-warning-soft);
+}
+
+.notice--error {
+    border-left-color: var(--color-danger);
+    background: var(--color-danger-soft);
+}
+
+.notice--success {
+    border-left-color: var(--color-success);
+    background: var(--color-success-soft);
+}
+
+.notice__title {
+    margin: 0 0 var(--space-2);
+    font-size: 1.1em;
+}
+
+/* First-visit visitor profile panel (usertype + stepfree cookies). */
+.welcome-panel {
+    margin: 0 0 var(--space-6);
+    padding: var(--space-5);
+    background: var(--color-primary-soft);
+    border: 3px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+}
+
+.welcome-panel > h2 {
+    margin-top: 0;
+}
+
+.welcome-form fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0 0 var(--space-4);
+}
+
+.welcome-form legend {
+    margin-bottom: var(--space-2);
+    font-weight: var(--font-weight-bold);
+}
+
+.welcome-form .chip-row {
+    margin-bottom: var(--space-2);
+}
+
+/* -------------------------------------------------------------------------
+   10b. Floating "Start navigating" call to action
+   ------------------------------------------------------------------------- */
+
+.cta-float {
+    position: fixed;
+    right: var(--space-4);
+    bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+    z-index: 850;                      /* above content, below bottom sheets */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 64px;
+    padding: 14px 30px;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: 3px solid var(--color-on-primary);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 16px 40px rgba(16, 24, 32, 0.28);
+    font-size: 1.2em;
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+}
+
+.cta-float:hover {
+    background: var(--color-primary-dark);
+    color: var(--color-on-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.cta-float__icon {
+    font-size: 1.35em;
+    line-height: 1;
+}
+
+/* Never cover a bottom sheet or the map controls. */
+body.panel-open .cta-float,
+body.page-map .cta-float {
+    display: none;
+}
+
+/* -------------------------------------------------------------------------
+   11. Cards
+   ------------------------------------------------------------------------- */
+
+.card {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.card h2,
+.card h3 {
+    margin-top: 0;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+/* -------------------------------------------------------------------------
+   12. Forms
+   ------------------------------------------------------------------------- */
+
+.field {
+    margin-bottom: var(--space-5);
+}
+
+.field label,
+.field legend {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: var(--font-weight-bold);
+}
+
+.field__hint {
+    margin: 0 0 var(--space-2);
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+select,
+textarea {
+    width: 100%;
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--color-primary);
+}
+
+input:disabled,
+select:disabled {
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+}
+
+.error-text {
+    margin: var(--space-2) 0 0;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-danger);
+}
+
+/* -------------------------------------------------------------------------
+   13. Switches (real checkbox, styled as a track + thumb)
+   ------------------------------------------------------------------------- */
+
+.switch-field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* The native control stays in the accessibility tree, just visually hidden. */
+.switch-input,
+.mini-switch__input,
+.chip-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.switch-label,
+.mini-switch__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--touch-min);
+    cursor: pointer;
+    font-weight: var(--font-weight-bold);
+}
+
+.switch-track,
+.mini-switch__track {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    width: 64px;
+    height: 34px;
+    background: var(--color-surface-sunken);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.switch-thumb,
+.mini-switch__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: var(--color-text-muted);
+    border-radius: 50%;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.switch-input:checked + .switch-label .switch-track,
+.mini-switch__input:checked + .mini-switch__label .mini-switch__track {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.switch-input:checked + .switch-label .switch-thumb,
+.mini-switch__input:checked + .mini-switch__label .mini-switch__thumb {
+    transform: translateX(30px);
+    background: #ffffff;
+}
+
+.mini-switch__track {
+    width: 52px;
+    height: 30px;
+}
+
+.mini-switch__thumb {
+    width: 20px;
+    height: 20px;
+}
+
+.mini-switch__input:checked + .mini-switch__label .mini-switch__thumb {
+    transform: translateX(22px);
+}
+
+/* Focus ring goes on the visible control, not the hidden input. */
+.switch-input:focus-visible + .switch-label .switch-track,
+.mini-switch__input:focus-visible + .mini-switch__label .mini-switch__track,
+.chip-input:focus-visible + .chip-label {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+}
+
+/* -------------------------------------------------------------------------
+   14. Filter chips
+   ------------------------------------------------------------------------- */
+
+.chip-fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.chip-row {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding: var(--space-1) var(--space-1) var(--space-2);
+    scrollbar-width: thin;
+}
+
+.chip {
+    display: inline-flex;
+    flex: none;
+}
+
+.chip-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Fixed-size checkbox glyph so selecting a chip never shifts the layout. */
+.chip-label::before {
+    content: "";
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    font-size: 0.8em;
+    line-height: 1;
+}
+
+.chip-label:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.chip-input:checked + .chip-label {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-color: var(--color-primary);
+}
+
+.chip-input:checked + .chip-label::before {
+    content: "✓";
+    background: #ffffff;
+    color: var(--color-primary);
+}
+
+/* -------------------------------------------------------------------------
+   15. Filter bar (sticky on mobile, see mobile.css)
+   ------------------------------------------------------------------------- */
+
+.filter-bar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    margin: 0 calc(-1 * var(--space-4)) var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface);
+    border-bottom: 2px solid var(--color-rule);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-bar__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    margin-bottom: var(--space-2);
+}
+
+.filter-bar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.filter-status {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+}
+
+.grid-hint {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    margin: 0 0 var(--space-3);
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   16. Large-icon grid (Epic 2.1)
+   ------------------------------------------------------------------------- */
+
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
+}
+
+.icon-grid__item {
+    display: flex;
+    margin: 0;
+}
+
+.icon-grid__item[hidden] {
+    display: none;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: var(--tile-min-height);
+    padding: var(--space-3);
+    text-align: left;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.tile:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.tile:active {
+    transform: translateY(1px);
+}
+
+.tile[aria-pressed="true"] {
+    border-color: var(--color-primary);
+    border-width: 4px;
+    background: var(--color-primary-soft);
+}
+
+.tile__icon {
+    display: block;
+    color: var(--color-primary);
+}
+
+.tile__name {
+    display: block;
+    max-width: 100%;
+    font-size: 1.15em;          /* >= 18px at the 16px base */
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+    overflow-wrap: anywhere;    /* large text must wrap, never clip */
+    hyphens: auto;
+}
+
+.tile__desc {
+    display: block;
+    max-width: 100%;
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.tile__meta {
+    display: block;
+    max-width: 100%;
+    margin-top: auto;
+    padding-top: var(--space-1);
+    font-size: 0.85em;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-success);
+    overflow-wrap: anywhere;
+}
+
+.tile__flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+}
+
+.flag {
+    display: inline-block;
+    padding: 2px var(--space-2);
+    font-size: 0.75em;
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-sunken);
+    color: var(--color-text);
+}
+
+.flag--go {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+}
+
+.flag--partial {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+}
+
+/* -------------------------------------------------------------------------
+   17. Detail panel (bottom sheet on mobile, side panel on desktop)
+   ------------------------------------------------------------------------- */
+
+.icon-panel {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 150;
+    max-height: 82vh;
+    overflow-y: auto;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border-top: 4px solid var(--color-primary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: var(--shadow-lg);
+}
+
+.icon-panel[hidden] {
+    display: none;
+}
+
+.icon-panel__handle {
+    width: 56px;
+    height: 6px;
+    margin: 0 auto var(--space-3);
+    background: var(--color-rule);
+    border-radius: var(--radius-pill);
+}
+
+.icon-panel__close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-surface-alt);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+}
+
+.icon-panel__close:hover {
+    background: var(--color-primary-soft);
+    border-color: var(--color-primary);
+}
+
+.panel-icon {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    margin-bottom: var(--space-3);
+    border-radius: var(--radius-lg);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.panel-icon svg.icon {
+    width: 64px;
+    height: 64px;
+}
+
+.panel-title {
+    margin: 0 0 var(--space-1);
+    font-size: 1.5em;
+}
+
+.panel-category {
+    margin: 0 0 var(--space-3);
+    font-size: 0.9em;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.panel-section {
+    margin: var(--space-5) 0 0;
+}
+
+.panel-section h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.05em;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tag-list li {
+    margin: 0;
+}
+
+.nearest-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nearest-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0;
+    padding: var(--space-3) 0;
+    border-bottom: 2px solid var(--color-rule);
+}
+
+.nearest-list li:last-child {
+    border-bottom: 0;
+}
+
+.nearest-list__name {
+    font-weight: var(--font-weight-bold);
+}
+
+.nearest-list__distance {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-bold);
+}
+
+.panel-actions {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+}
+
+/* -------------------------------------------------------------------------
+   18. Map (Epic 2.2)
+   ------------------------------------------------------------------------- */
+
+.map-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.map-stage {
+    position: relative;
+    min-height: 60vh;
+}
+
+.map-canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 60vh;
+    background: var(--color-surface-sunken);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-md);
+}
+
+/* Leaflet ships `outline: 0` on its container: put the focus ring back. */
+.map-canvas:focus-visible,
+.leaflet-container:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.map-controls {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.map-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: var(--color-surface);
+    color: var(--color-primary);
+    border: 3px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    font-size: 1.4em;
+    font-weight: var(--font-weight-bold);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+}
+
+.map-btn:hover {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.map-sidebar {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.route-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+}
+
+.route-stats div {
+    padding: var(--space-3);
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md);
+}
+
+.route-stats dt {
+    font-size: 0.8em;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.route-stats dd {
+    margin: var(--space-1) 0 0;
+    font-size: 1.2em;
+    font-weight: var(--font-weight-bold);
+}
+
+.route-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.route-steps li {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: var(--space-2) var(--space-3);
+    margin: 0 0 var(--space-3);
+    padding: var(--space-3);
+    background: var(--color-surface-alt);
+    border-left: 6px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    counter-increment: step;
+}
+
+/* The number badge spans every row; all text sits in the wide column so a
+   long accessibility note can never collapse to a 44px sliver. */
+.route-steps li::before {
+    content: counter(step);
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-radius: 50%;
+    font-weight: var(--font-weight-bold);
+}
+
+.route-steps li > span {
+    grid-column: 2;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.route-steps__note {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+}
+
+.route-steps__distance {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: 0.85em;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+}
+
+/* Custom markers mirror the Epic 2.1 icons so the two views share a language. */
+.map-marker {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    background: var(--color-primary);
+    color: #ffffff;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    font-weight: var(--font-weight-bold);
+}
+
+.map-marker svg {
+    width: 26px;
+    height: 26px;
+}
+
+.map-marker--step-free {
+    background: var(--color-success);
+}
+
+/* Leaflet ships `.leaflet-marker-icon { display: block }` and its stylesheet is
+   loaded after ours, so the centring below needs the extra specificity or the
+   glyph falls outside the circle. */
+.leaflet-container .map-marker {
+    display: grid;
+    place-items: center;
+}
+
+/* Live route status: visible but quiet, so it does not compete with the steps. */
+#route-status {
+    margin: 0 0 var(--space-3);
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+}
+
+.map-marker--user {
+    background: var(--color-danger);
+    animation: map-pulse 2s infinite;
+}
+
+@keyframes map-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(164, 22, 26, 0.55); }
+    70%  { box-shadow: 0 0 0 18px rgba(164, 22, 26, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(164, 22, 26, 0); }
+}
+
+.map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-3) 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9em;
+}
+
+.map-legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+}
+
+.legend-swatch {
+    display: inline-block;
+    width: 28px;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: var(--color-step);
+}
+
+.legend-swatch--step-free {
+    background: var(--color-success);
+}
+
+/* Mobile route sheet handle */
+.sheet-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: var(--touch-min);
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid var(--color-rule);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+}
+
+.sheet-handle__bar {
+    display: inline-block;
+    width: 56px;
+    height: 6px;
+    background: var(--color-rule);
+    border-radius: var(--radius-pill);
+}
+
+/* -------------------------------------------------------------------------
+   18b. Map page extras
+   ------------------------------------------------------------------------- */
+
+.map-toolbar {
+    padding: var(--space-4) var(--space-4) var(--space-2);
+}
+
+.map-toolbar h1 {
+    margin-bottom: var(--space-1);
+}
+
+.map-resource-list {
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-lg);
+}
+
+/* Map preview / screenshot switch, floating over the top-left of the stage. */
+.map-view-switch {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    z-index: 600;
+    margin: 0;
+    padding: var(--space-2);
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-md);
+}
+
+/* Still image view: same area as the map, works offline. */
+.map-screenshot {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-md);
+}
+
+.map-screenshot img {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+.map-screenshot figcaption {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+    border-top: 2px solid var(--color-rule);
+}
+
+/* The drawing controls make no sense while the still image is displayed. */
+.map-stage.is-screenshot .map-controls {
+    display: none;
+}
+
+/* Curated CityU resources under the map. */
+.resource-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.resource-showcase li {
+    display: flex;
+    margin: 0;
+}
+
+.resource-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-lg);
+}
+
+.resource-card__icon {
+    display: block;
+    color: var(--color-primary);
+}
+
+.resource-card__name {
+    margin: 0;
+    font-size: 1.05em;
+}
+
+.resource-card__desc {
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+.resource-card__meta {
+    margin: 0;
+}
+
+.resource-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: auto;
+}
+
+.resource-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.resource-buttons li {
+    margin: 0;
+}
+
+/* -------------------------------------------------------------------------
+   19. Settings + live preview
+   ------------------------------------------------------------------------- */
+
+.settings-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+/* Grid items must be allowed to shrink. Without this a wide child (for
+   example a chip row) forces the column wider than the screen and the whole
+   settings block spills outside its border. */
+.settings-layout > * {
+    min-width: 0;
+}
+
+.settings-group {
+    margin: 0 0 var(--space-5);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-lg);
+}
+
+.settings-group > h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.setting-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) 0;
+    border-bottom: 2px solid var(--color-rule);
+}
+
+.setting-row:last-child {
+    border-bottom: 0;
+}
+
+.setting-row__text {
+    flex: 1 1 220px;
+}
+
+.setting-row__label {
+    display: block;
+    font-weight: var(--font-weight-bold);
+}
+
+.setting-row__help {
+    display: block;
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+}
+
+.settings-preview {
+    padding: var(--space-4);
+    background: var(--color-surface-alt);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.preview-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-lg);
+}
+
+.preview-tile__name {
+    font-size: 1.15em;
+    font-weight: var(--font-weight-bold);
+}
+
+.preview-text {
+    margin: var(--space-3) 0 0;
+    font-size: 1em;
+}
+
+/* Text size is a radio group, so it uses a stacked block rather than the
+   switch / select alignment of the other rows. */
+.setting-block {
+    padding: var(--space-3) 0;
+    border-bottom: 2px solid var(--color-rule);
+}
+
+.setting-block .setting-row__text {
+    flex: none;
+    margin-bottom: var(--space-2);
+}
+
+.text-size-field {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.text-size-field .chip-row {
+    margin: 0;
+}
+
+.settings-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+}
+
+/* Settings save on every change; this replaces the old Save button. */
+.settings-autosave {
+    margin: var(--space-4) 0 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-success-soft);
+    border-left: 6px solid var(--color-success);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+}
+
+.preview-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-4) 0 0;
+}
+
+.preview-meta div {
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-md);
+}
+
+.preview-meta dt {
+    font-size: 0.8em;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.preview-meta dd {
+    margin: var(--space-1) 0 0;
+    font-weight: var(--font-weight-bold);
+}
+
+/* -------------------------------------------------------------------------
+   20. Help centre
+   ------------------------------------------------------------------------- */
+
+.emergency-block {
+    padding: var(--space-5);
+    background: var(--color-danger-soft);
+    border: 3px solid var(--color-danger);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-5);
+}
+
+.emergency-block h2 {
+    margin-top: 0;
+    font-size: 1.3em;
+}
+
+.emergency-phone {
+    display: inline-block;
+    margin: var(--space-2) 0 var(--space-3);
+    font-size: 2em;              /* >= 32px, per brief */
+    font-weight: var(--font-weight-bold);
+    color: var(--color-danger);
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    line-height: 1.2;
+}
+
+.faq {
+    margin: 0 0 var(--space-4);
+}
+
+.faq__item {
+    margin-bottom: var(--space-3);
+    background: var(--color-surface);
+    border: 2px solid var(--color-rule);
+    border-radius: var(--radius-md);
+}
+
+.faq__item[open] {
+    border-color: var(--color-primary);
+}
+
+.faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--touch-min);
+    padding: var(--space-3) var(--space-4);
+    font-size: 1.05em;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    list-style: none;
+}
+
+.faq__question::-webkit-details-marker {
+    display: none;
+}
+
+.faq__question::after {
+    content: "+";
+    flex: none;
+    font-size: 1.6em;
+    line-height: 1;
+    color: var(--color-primary);
+}
+
+.faq__item[open] .faq__question::after {
+    content: "−";
+}
+
+.faq__answer {
+    padding: 0 var(--space-4) var(--space-4);
+}
+
+.faq__answer p:last-child {
+    margin-bottom: 0;
+}
+
+/* -------------------------------------------------------------------------
+   21. Landing page
+   ------------------------------------------------------------------------- */
+
+.hero {
+    padding: var(--space-6) 0 var(--space-5);
+}
+
+.hero h1 {
+    font-size: clamp(1.9em, 6vw, 2.8em);
+    margin-bottom: var(--space-3);
+}
+
+.hero__actions {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-5) 0;
+}
+
+.hero__aside {
+    padding: var(--space-4);
+    background: var(--color-primary-soft);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+}
+
+.hero__aside h2 {
+    margin-top: 0;
+    font-size: 1.15em;
+}
+
+.landing-section {
+    margin-top: var(--space-7);
+}
+
+.panel-actions .btn-large {
+    width: 100%;
+    min-width: 0;
+}
+
+
+.site-footer {
+    margin-top: var(--space-7);
+    background: #08386f;              /* 8.9:1 with white text */
+    color: #ffffff;
+}
+
+.site-footer a {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+.site-footer a:hover {
+    color: #ffffff;
+    text-decoration-thickness: 3px;
+}
+
+.site-footer__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--space-6) var(--space-4);
+}
+
+.site-footer h2 {
+    margin-top: 0;
+    font-size: 1.15em;
+    color: #ffffff;
+}
+
+.site-footer p {
+    color: #ffffff;
+}
+
+.footer-emergency {
+    padding: var(--space-4);
+    background: transparent;
+    color: #ffb3b8;                   /* 6.9:1 on the #08386f footer */
+    border: 3px solid #ff8a8a;
+    border-radius: var(--radius-lg);
+}
+
+.footer-emergency__title,
+.footer-emergency__text {
+    color: #ffb3b8;
+}
+
+.footer-emergency__text {
+    margin-bottom: var(--space-2);
+}
+
+.footer-emergency__phone {
+    display: inline-block;
+    margin: 0 0 var(--space-3);
+    font-size: 2em;                   /* >= 32px: the most important number */
+    font-weight: var(--font-weight-bold);
+    color: #ffd7d9;                   /* 8.8:1 on the footer blue */
+    line-height: 1.2;
+}
+
+.footer-nav__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-nav__list li {
+    margin: 0 0 var(--space-2);
+}
+
+.footer-nav__list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+}
+
+.site-footer__legal {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--space-4) var(--space-4) calc(var(--space-6) + 92px);
+    border-top: 2px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.9em;
+}
+
+.footer-note {
+    margin: 0;
+    color: #ffffff;
+}
